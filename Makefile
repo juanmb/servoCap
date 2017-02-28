@@ -1,6 +1,6 @@
 
 STL_FILES=bearing_adapter.stl bearing_holder.stl crank.stl rod_adapter.stl \
-		  cap.stl rod.stl servo_holder.stl clamp.stl
+		  cap.stl rod.stl servo_holder.stl clamp.stl box.stl
 
 all: $(STL_FILES)
 
@@ -26,6 +26,9 @@ servo_holder.stl: servo_holder.scad
 	openscad -o $@ $<
 
 clamp.stl: clamp.scad
+	openscad -o $@ $<
+
+box.stl: pcb_box.scad
 	openscad -o $@ $<
 
 clean:
