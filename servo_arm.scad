@@ -6,11 +6,11 @@ bearingHeight = 7;
 thickness = 1.6;
 rimHeight = 1;
 rimThickness = 0.5;
-stopHeight = 2;
+stopHeight = 3;
 armLength = 30;
 
 // Spring fasteners
-fastener1Distance = 12; // distance from the axis
+fastener1Distance = 20; // distance from the axis
 fastener2Distance = 22; // distance from the axis
 fastenerDiam = 3.5;
 fastenerHeigh = 3.5;
