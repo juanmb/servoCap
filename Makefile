@@ -1,35 +1,18 @@
+# This Makefile is used to compile and upload the code to the Arduino via
+# Make, instead of using the IDE.
+#
+# The user should replace ARDUINO_PORT and the path to Arduino.mk for the
+# rigth values if this Makefile is going to be used.
+#
+# Source code can be downloaded from:
+# 	https://github.com/sudar/Arduino-Makefile
 
-STL_FILES=bearing_adapter.stl bearing_holder.stl crank.stl rod_adapter.stl \
-		  cap.stl rod.stl servo_holder.stl clamp.stl box.stl
+BOARD_TAG    = nano
+BOARD_SUB    = atmega328
+ARDUINO_LIBS = Servo SoftwareSerial SerialCommand
+ARDUINO_PORT = /dev/ttyUSB0
 
-all: $(STL_FILES)
+include /usr/share/arduino/Arduino.mk
 
-bearing_adapter.stl: servo_arm.scad
-	openscad -o $@ -Dpart=1 $<
-
-bearing_holder.stl: servo_arm.scad
-	openscad -o $@ -Dpart=2 $<
-
-crank.stl: servo_arm.scad
-	openscad -o $@ -Dpart=3 $<
-
-rod_adapter.stl: servo_arm.scad
-	openscad -o $@ -Dpart=4 $<
-
-cap.stl: telescope_cap.scad
-	openscad -o $@ -Dpart=1 $<
-
-rod.stl: telescope_cap.scad
-	openscad -o $@ -Dpart=2 $<
-
-servo_holder.stl: servo_holder.scad
-	openscad -o $@ $<
-
-clamp.stl: clamp.scad
-	openscad -o $@ $<
-
-box.stl: pcb_box.scad
-	openscad -o $@ $<
-
-clean:
-	rm -f $(STL_FILES)
+format:
+	astyle --style=stroustrup -p -c -s4 *.cpp *.h *.ino
