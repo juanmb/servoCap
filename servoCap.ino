@@ -5,17 +5,22 @@
 #define BAUDRATE 38400
 #define LIGHT_PIN LED_BUILTIN
 
+#define BUTTON_PIN 2
+
 #define SERVO1_PIN 9
 #define SERVO1_CLOSED 0
 #define SERVO1_OPEN 120
 
 #define SERVO2_PIN 10
 #define SERVO2_CLOSED 120
-#define SERVO2_OPEN 20
+#define SERVO2_OPEN 12
+
+enum {ST_CLOSED, ST_OPEN};
 
 Servo servo1;
 Servo servo2;
 SerialCommand sCmd;
+int state = ST_CLOSED;
 
 
 void getVersion()
@@ -43,31 +48,41 @@ void getStatus()
     Serial.println(coverSt);
 }
 
-void ForceOpen()
+void openCaps()
 {
     servo1.write(SERVO1_OPEN);
     servo2.write(SERVO2_OPEN);
+    state = ST_OPEN;
+}
+
+void closeCaps()
+{
+    servo1.write(SERVO1_CLOSED);
+    servo2.write(SERVO2_CLOSED);
+    state = ST_CLOSED;
+}
+
+void ForceOpen()
+{
+    openCaps();
     Serial.println("*o000");
 }
 
 void Open()
 {
-    servo1.write(SERVO1_OPEN);
-    servo2.write(SERVO2_OPEN);
-    Serial.println("*o000");
+    openCaps();
+    Serial.println("*O000");
 }
 
 void ForceClose()
 {
-    servo1.write(SERVO1_CLOSED);
-    servo2.write(SERVO2_CLOSED);
+    closeCaps();
     Serial.println("*c000");
 }
 
 void Close()
 {
-    servo1.write(SERVO1_CLOSED);
-    servo2.write(SERVO2_CLOSED);
+    closeCaps();
     Serial.println("*C000");
 }
 
@@ -101,6 +116,9 @@ void setBrightness()
 
 void setup()
 {
+    pinMode(BUTTON_PIN, INPUT);
+    digitalWrite(BUTTON_PIN, HIGH); // enable pull-up resistor
+
     servo1.attach(SERVO1_PIN);
     servo1.write(SERVO1_CLOSED);
 
@@ -125,5 +143,25 @@ void setup()
 
 void loop()
 {
+    static int prev_button = 0;
+    static long time = 0;
     sCmd.readSerial();
+
+    if (millis() - time > 50) {
+        int button = !digitalRead(BUTTON_PIN);
+
+        if (button && (button != prev_button)) {
+            switch(state) {
+                case ST_CLOSED:
+                    openCaps();
+                    break;
+                case ST_OPEN:
+                    closeCaps();
+                    break;
+            };
+        }
+
+        prev_button = button;
+        time = millis();
+    }
 }
